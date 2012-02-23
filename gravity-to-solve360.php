@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.5
+ * @version 0.6
  */
 /*
 Plugin Name: Gravity to Solve360
 Description: Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
-Version: 0.5
+Version: 0.6
 Author: Steve Barnett
 Author URI: http://naga.co.za
 License: GPLv2 or later
@@ -32,14 +32,198 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 add_action('admin_menu', 'create_gts360_menu');
 
 function create_gts360_menu() {
-	add_management_page('Export to Solve360', 'Export to Solve360', 'manage_options', 'gravity-to-solve360', 'gts360');
-
+	// Export
+	add_management_page('Gravity to Solve360', 'Gravity to Solve360', 'manage_options', 'gravity-to-solve360', 'gts360');
+	// Options
+	add_options_page('Gravity to Solve360', 'Gravity to Solve360', 'manage_options', 'gravity-to-solve360-options', 'gts360_options');
 }
 
-// Settings > Export to Solve360
+global $accepted_fields;
+
+$accepted_fields = array(
+	'gravity_to_solve360_debug_mode',
+	'gravity_to_solve360_debug_start_date',
+	'gravity_to_solve360_user',
+	'gravity_to_solve360_token',
+	'gravity_to_solve360_to',
+	'gravity_to_solve360_from',
+	'gravity_to_solve360_cc',
+	'gravity_to_solve360_bcc'
+);
+
+if(!get_option('gravity_to_solve360_debug_mode')) update_option('gravity_to_solve360_debug_mode', 'true');
+
+// Tools > Export to Solve360
 
 function gts360() {
+	require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
+}
 
-require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
+function gts360_options() {
+
+global $accepted_fields;
+
+
+// Save data
+
+if($_POST && wp_verify_nonce($_POST['gravity_to_solve360_nonce'],'gravity_to_solve360_edit')) {
+	
+	foreach($accepted_fields as $accepted_field) {
+		update_option( $accepted_field, $_POST[$accepted_field] );
+	}
+	
+}
+
+?>
+<div class="wrap">
+
+<form method="post" id="gravity_to_solve360">
+
+<h2>Gravity to Solve360 - options</h2>
+
+<table>
+
+	<tr>
+		<td>
+			<h3>Debug details</h3>
+		</td>
+		<td>
+		</td>
+	</tr>
+
+	<tr>
+
+		<td>
+			Debug mode
+		</td>
+		<td>
+		<?php $gravity_to_solve360_debug_mode = (get_option('gravity_to_solve360_debug_mode') == 'true'); ?>
+			<input type="radio" name="gravity_to_solve360_debug_mode" value="true" id="gravity_to_solve360_debug_mode_enabled" <?php if($gravity_to_solve360_debug_mode) echo 'checked="checked" '; ?> />
+			&nbsp; <label for="gravity_to_solve360_debug_mode_enabled">On</label> &nbsp; &nbsp;
+			
+			<input type="radio" name="gravity_to_solve360_debug_mode" value="false" id="gravity_to_solve360_debug_mode_disabled" <?php if(!$gravity_to_solve360_debug_mode) echo 'checked="checked" '; ?> />
+			&nbsp; <label for="gravity_to_solve360_debug_mode_disabled">Off</label> &nbsp; &nbsp;
+		</td>
+	</tr>
+	
+	<?php
+//	if(is_
+//	$gravity_to_solve360_debug_start_date = get_option('gravity_to_solve360_debug_start_date') 
+//'2012-02-12 10:30:00';
+
+//	echo date('Y-m-d H:i:s');
+//	if(is_numeric(strtotime(date('Y-m-d H:i:s')))) {
+//		echo 'Y';
+//	}
+//	else {
+//		echo 'N';
+//	}
+	
+//	$gravity_to_solve360_debug_start_date = get_option('gravity_to_solve360_debug_start_date');
+//	if(!is_numeric(strtotime($gravity_to_solve360_debug_start_date)))
+//	{
+//		$gravity_to_solve360_debug_start_date = date('Y-m-d H:i:s');
+//	}
+	
+	?>
+	<tr>
+
+		<td>
+			<label for="gravity_to_solve360_debug_start_date">Override Start Date</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_debug_start_date" id="gravity_to_solve360_debug_start_date" value="<?php echo get_option('gravity_to_solve360_debug_start_date'); ?>" />
+			Current: <?php echo get_option('gravity_to_solve360_last_export_date'); ?>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<h3>Solve details</h3>
+		</td>
+		<td>
+		</td>
+	</tr>
+	
+	<tr>
+	
+		<td>
+			<label for="gravity_to_solve360_user">Solve360 User</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_user" id="gravity_to_solve360_user" value="<?php echo get_option('gravity_to_solve360_user'); ?>" />		
+		</td>
+	</tr>
+
+	<tr>
+	
+		<td>
+			<label for="gravity_to_solve360_token">Solve360 API Token</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_token" id="gravity_to_solve360_token" value="<?php echo get_option('gravity_to_solve360_token'); ?>" />		
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			<h3>Solve notification details</h3>
+		</td>
+		<td>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label for="gravity_to_solve360_to">To:</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_to" id="gravity_to_solve360_to" value="<?php echo get_option('gravity_to_solve360_to'); ?>" />
+			user@example.com, Another User &lt;anotheruser@example.com&gt;
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label for="gravity_to_solve360_from">From:</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_from" id="gravity_to_solve360_from" value="<?php echo get_option('gravity_to_solve360_from'); ?>" />		
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label for="gravity_to_solve360_cc">CC:</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_cc" id="gravity_to_solve360_cc" value="<?php echo get_option('gravity_to_solve360_cc'); ?>" />		
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label for="gravity_to_solve360_bcc">Bcc:</label>
+		</td>
+		<td>
+			<input type="text" class="regular-text" name="gravity_to_solve360_bcc" id="gravity_to_solve360_bcc" value="<?php echo get_option('gravity_to_solve360_bcc'); ?>" />		
+		</td>
+	</tr>
+
+</table>
+
+
+<br/><br/>
+<p class="submit" style="text-align: left;">
+	<input type="submit" name="submit" value="Save Settings" class="button-primary"/>
+</p>
+
+<?php wp_nonce_field('gravity_to_solve360_edit','gravity_to_solve360_nonce'); ?>
+
+</form>
+
+</div>
+
+<?php
 
 }

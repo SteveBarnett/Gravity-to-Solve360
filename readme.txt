@@ -1,9 +1,9 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, solve360
-Stable tag: 0.5
-Requires at least: 3.3
-Tested up to: 3.3
+Stable tag: 0.6
+Requires at least: 3.1.3
+Tested up to: 3.3.1
 License: GPLv2 or later
 
 Exports data from completed Gravity Forms to a specified Solve360 account.
@@ -11,6 +11,7 @@ Exports data from completed Gravity Forms to a specified Solve360 account.
 == Description ==
 
 Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
+Also available on GitHub: <a href="https://github.com/SteveBarnett/Gravity-to-Solve360">https://github.com/SteveBarnett/Gravity-to-Solve360</a>.
 
 == Installation ==
 
@@ -62,6 +63,12 @@ Hidden field example
 	"NoteTextGoesHere"
 
 == Changelog ==
+
+= 0.6 =
+
+* Added link to GitHub
+* Add Options page
+
 
 = 0.5 =
 * Added check for is_plugin_active for later use in cronjob

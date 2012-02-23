@@ -1,32 +1,35 @@
 <?php
 
-$debug = true;
-// $debug = false;
+$debug = (get_option('gravity_to_solve360_debug_mode') == 'true');
 
 // Solve360 details
 
 // REQUIRED Edit with the email address you login to Solve360 with
-$gravity_to_solve360_user = 'xxxx@xxxx';
+$gravity_to_solve360_user = get_option('gravity_to_solve360_user');
 // REQUIRED Edit with token, Workspace > My Account > API Reference > API Token
-$gravity_to_solve360_token = 'xxxx';
+$gravity_to_solve360_token = get_option('gravity_to_solve360_token');
 
-// Date options
 
-// Overrides for debugging
-// $debug_start_date = '2012-02-12 10:30:00';
-// $debug_end_date = '2012-01-02 00:00:00';
+// Date overrides for debugging
+ $debug_start_date = get_option('gravity_to_solve360_debug_start_date');
 
-// Notification emails
 
-$to = 'xxxx@xxxx';
-$from = 'Gravity to Solve360 Export <xxxx@xxxx>';
-// $cc .= 'Name <xxxx@xxxx>';
-// $bcc .= 'XXXX <xxxx@xxxx>';
+// Initialise output and error logging
 
-$output = '<h3>Gravity to Solve360</h3>';
+$output = '';
+
+$output .= '<div class="wrap">';
+$output .= '<h2>Gravity to Solve360</h2>';
 
 $errors = '';
 
+
+// Notification emails
+
+$to = get_option('gravity_to_solve360_to');
+$from = get_option('gravity_to_solve360_from');
+$cc .= get_option('gravity_to_solve360_cc');
+$bcc .= get_option('gravity_to_solve360_bcc');
 
 // check for Gravity Forms
 
@@ -40,6 +43,7 @@ if(!is_plugin_active('gravityforms/gravityforms.php')) {
 
 // check Solve service and credentials
 // Solve360Service.php available from http://norada.com/?uri=norada/crm/external_api_introduction
+
 if(!file_exists(ABSPATH . 'wp-content/plugins/gravity-to-solve360/Solve360Service.php')) {
 	$errors .= '<p>Solve360Service.php is not present, and is required.</p>';
 }
@@ -50,15 +54,17 @@ elseif(!$gravity_to_solve360_user || !$gravity_to_solve360_token) {
 if(!$errors) {
 
 	if($debug) {
-	$output .= '<h2>Debug mode</h2>';
+	$output .= '<h3>Debug mode</h3>';
 	}
 	else
 	{
-	$output .= '<h2>Live mode</h2>';
+	$output .= '<h3>Live mode</h3>';
 	}
 
 	if(!$debug) {
+	
 		// Configure service gateway object
+		
 		require 'Solve360Service.php';
 		$solve360Service = new Solve360Service($gravity_to_solve360_user, $gravity_to_solve360_token);
 	}
@@ -325,5 +331,7 @@ if(!$errors) {
 
 
 $output .=  $errors;
+
+$output .= '</div>';
 
 echo $output;
