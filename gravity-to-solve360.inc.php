@@ -324,8 +324,10 @@ if(!$errors) {
 	</table>
 	';
 	}
-
+	
+	if(!$debug) {
 	update_option('gravity_to_solve360_last_export_date', $end_date);
+	}
 
 } // if(!$errors)
 
