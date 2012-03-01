@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, solve360
-Stable tag: 0.61
+Stable tag: 0.62
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -63,6 +63,10 @@ Hidden field example
 	"NoteTextGoesHere"
 
 == Changelog ==
+
+= 0.62 =
+
+* Fixed error with cellularphone field
 
 = 0.61 =
 

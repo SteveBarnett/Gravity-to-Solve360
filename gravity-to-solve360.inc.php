@@ -119,8 +119,8 @@ if(!$errors) {
 						$forms_and_fields[$form_id]['note'][$notenumber]['id'] = $fields['id'];
 						$forms_and_fields[$form_id]['note'][$notenumber]['text'] = $notetext;
 						$notenumber++;
-					}
-					elseif(stripos($fields['adminLabel'], 'firstname') !== false || stripos($fields['adminLabel'], 'lastname') !== false || stripos($fields['adminLabel'], 'businessemail') !== false)
+						}
+					elseif(stripos($fields['adminLabel'], 'firstname') !== false || stripos($fields['adminLabel'], 'lastname') !== false || stripos($fields['adminLabel'], 'businessemail') !== false || stripos($fields['adminLabel'], 'cellularphone') !== false)
 					{
 						$forms_and_fields[$form_id][str_ireplace('solve360 ','',$fields['adminLabel'])] = $fields['id'];
 					}
