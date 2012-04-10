@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.62
+ * @version 0.7
  */
 /*
 Plugin Name: Gravity to Solve360

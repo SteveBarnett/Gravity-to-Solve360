@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, solve360
-Stable tag: 0.62
+Stable tag: 0.7
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -29,7 +29,9 @@ The required fields are:
 	firstname;
 	lastname;
 	businessemail;
-	cellularphone.
+	cellularphone;
+	category;
+	ownership.
 When Gravity's combined fields for Name are used, the Admin Label should be "solve360 fullname".
 
 
@@ -63,6 +65,10 @@ Hidden field example
 	"NoteTextGoesHere"
 
 == Changelog ==
+
+= 0.7 =
+
+* Added better error checking
 
 = 0.62 =
 
