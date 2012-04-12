@@ -23,14 +23,6 @@ $output .= '<h2>Gravity to Solve360</h2>';
 
 $errors = false;
 
-
-// Notification emails
-
-$to = get_option('gravity_to_solve360_to');
-$from = get_option('gravity_to_solve360_from');
-$cc .= get_option('gravity_to_solve360_cc');
-$bcc .= get_option('gravity_to_solve360_bcc');
-
 // check for Gravity Forms
 
 if(!function_exists('is_plugin_active')) {
@@ -79,135 +71,149 @@ if(!$errors) {
 
 	// Make array of form ids and Solve fields
 
-	// if($debug) $output .= '<h4>$forms_and_fields</h4>';
-
 	$forms_and_fields = array();
 
-	for($form_id=1; $form_id<=1000; $form_id++)
-	{
+	$active = RGForms::get("active") == "" ? null : RGForms::get("active");
+    $forms = RGFormsModel::get_forms($active, "title");
+
+    foreach($forms as $form) {
 
 		$required_fields = array(
-			'firstname' => false,
-			'lastname' => false,
-			'businessemail' => false,
-			'cellularphone' => false,
-			'category' => false,
-			'ownership' => false
+			'businessemail' => false, // required for matching contacs
+			'category' => false, // required by API
+			'ownership' => false // required by API
 		);
 
 		// get form meta - array of form data: id, title, description, fields, etc
-		$form_meta = RGFormsModel::get_form_meta($form_id);
+		$form_meta = RGFormsModel::get_form_meta($form->id);
 		$notenumber = 0;
+		$found_fields = array();
 
-		// if($debug && $form_meta) $output .= '<h4>$form_meta for form ' . $form_id . '</h4>' . print_r($form_meta, true);
-
-		if($form_meta)
+		// get field numbers for later use.
+		foreach($form_meta['fields'] as &$fields)
 		{
 
-			// get field numbers for later use.
-			foreach($form_meta['fields'] as &$fields)
+			// check adminLabels
+			if(stripos($fields['adminLabel'], 'solve360 ') !== false)
 			{
+				$adminLabel = str_ireplace('solve360 ','',$fields['adminLabel']);
 
-				// check adminLabels
-				if(stripos($fields['adminLabel'], 'solve360 ') !== false)
+				if(stripos($fields['adminLabel'], 'fullname') !== false)
 				{
-					if(stripos($fields['adminLabel'], 'fullname') !== false)
-					{
-						$forms_and_fields[$form_id]['firstname'] = $fields['id'] . '.3';
-						$forms_and_fields[$form_id]['lastname'] = $fields['id'] . '.6';
-						$required_fields['firstname'] = true;
-						$required_fields['lastname'] = true;
+					$forms_and_fields[$form->id]['firstname'] = $fields['id'] . '.3';
+					$forms_and_fields[$form->id]['lastname'] = $fields['id'] . '.6';
+					$found_fields[] = 'firstname';
+					$found_fields[] = 'lastname';
+				}
+				elseif(stripos($fields['adminLabel'], 'note') !== false)
+				{
+					$notetext = str_ireplace('note ','',$adminLabel);
+					$forms_and_fields[$form->id]['note'][$notenumber]['id'] = $fields['id'];
+					$forms_and_fields[$form->id]['note'][$notenumber]['text'] = $notetext;
+					$notenumber++;
+					$found_fields[] = 'note';
 					}
-					elseif(stripos($fields['adminLabel'], 'note') !== false)
-					{
-						// use the label text as the note name.
-						$notetext = str_ireplace('solve360 note ','',$fields['adminLabel']);
-						$forms_and_fields[$form_id]['note'][$notenumber]['id'] = $fields['id'];
-						$forms_and_fields[$form_id]['note'][$notenumber]['text'] = $notetext;
-						$notenumber++;
-						}
-					elseif(stripos($fields['adminLabel'], 'firstname') !== false)
-					{
-						$forms_and_fields[$form_id][str_ireplace('solve360 ','',$fields['adminLabel'])] = $fields['id'];
-						$required_fields['firstname'] = true;
-					}
-
-					elseif(stripos($fields['adminLabel'], 'lastname') !== false)
-					{
-						$forms_and_fields[$form_id][str_ireplace('solve360 ','',$fields['adminLabel'])] = $fields['id'];
-						$required_fields['lastname'] = true;
-					}
-					elseif(stripos($fields['adminLabel'], 'businessemail') !== false)
-					{
-						$forms_and_fields[$form_id][str_ireplace('solve360 ','',$fields['adminLabel'])] = $fields['id'];
-						$required_fields['businessemail'] = true;
-					}
-					elseif(stripos($fields['adminLabel'], 'cellularphone') !== false)
-					{
-						$forms_and_fields[$form_id][str_ireplace('solve360 ','',$fields['adminLabel'])] = $fields['id'];
-						$required_fields['cellularphone'] = true;
-					}
+				elseif(stripos($fields['adminLabel'], 'firstname') !== false)
+				{
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$found_field[] = 'firstname';
 				}
 
-				// check labels
-				if(stripos($fields['label'], 'solve360 ') !== false)
+				elseif(stripos($fields['adminLabel'], 'lastname') !== false)
 				{
-					if(stripos($fields['label'], 'referencenumber') !== false)
-					{
-						$forms_and_fields[$form_id]['referencenumber'] = $fields['id'];
-					}
-					elseif(stripos($fields['label'], 'note') !== false)
-					{
-						$notetext = str_ireplace('solve360 note ','',$fields['label']);
-						$forms_and_fields[$form_id]['note'][$notenumber]['id'] = $fields['id'];
-						$forms_and_fields[$form_id]['note'][$notenumber]['text'] = $notetext;
-						$notenumber++;
-					}
-					elseif(stripos($fields['label'], 'category') !== false)
-					{
-						// use the value as the solve tag id
-						$forms_and_fields[$form_id]['categoriestoadd'][] = $fields['defaultValue'];
-						$required_fields['category'] = true;
-					}
-					elseif(stripos($fields['label'], 'ownership') !== false)
-					{
-						// use the value as the solve tag id
-						$forms_and_fields[$form_id]['ownership'] = $fields['defaultValue'];
-						$required_fields['ownership'] = true;
-					}
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$found_fields[] = 'lastname, ';
 				}
-
+				elseif(stripos($fields['adminLabel'], 'businessemail') !== false)
+				{
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$required_fields['businessemail'] = true;
+					$found_fields[] = 'businessemail';
+				}
+				elseif(stripos($fields['adminLabel'], 'cellularphone') !== false)
+				{
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$required_fields['cellularphone'] = true;
+					$found_fields[] = 'cellularphone';
+				}
+				else {
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$found_fields[] = $adminLabel;
+				}
 			}
 
-			$output .= '<br />';
+			// check labels
+			if(stripos($fields['label'], 'solve360 ') !== false)
+			{
+				if(stripos($fields['label'], 'note') !== false)
+				{
+					$notetext = str_ireplace('solve360 note ','',$fields['label']);
+					$forms_and_fields[$form->id]['note'][$notenumber]['id'] = $fields['id'];
+					$forms_and_fields[$form->id]['note'][$notenumber]['text'] = $notetext;
+					$notenumber++;
+					$found_fields[] = 'note (hidden)';
+				}
+				elseif(stripos($fields['label'], 'category') !== false)
+				{
+					$forms_and_fields[$form->id]['categoriestoadd'][] = $fields['defaultValue'];
+					$required_fields['category'] = true;
+					$found_fields[] = 'category';
+				}
+				elseif(stripos($fields['label'], 'ownership') !== false)
+				{
+					$forms_and_fields[$form->id]['ownership'] = $fields['defaultValue'];
+					$required_fields['ownership'] = true;
+					$found_fields[] = 'ownership';
+				}
+				else {
+					$label = str_ireplace('solve360 ','',$fields['label']);
+					$forms_and_fields[$form->id][$label] = $fields['defaultValue'];
+					$found_fields[] = $label;
+				}
+			}
 
-			// all or none required present
-			if(count(array_unique($required_fields)) == 1) {
-				if ($debug) {
-					if(current($required_fields) === false) {
-						$output .= '<strong>Form ' . $form_id . '</strong><br />No solve360 labels found, skipping form.<br />';
-					}
-					else {
-						$output .= '<strong>Form ' . $form_id . '</strong><br />All required fields present.<br />';
-					}
-				} 
+		} // foreach($form_meta['fields'] as &$fields)
+
+		$output .= '<br />';
+
+
+		sort($found_fields);
+
+		if(count(array_unique($required_fields)) == 1) { // all or none required present
+
+			if(current($required_fields) === false) { // no required fields present
+				$output .= '<strong>' . $form->title . '</strong><br />No solve360 labels found, skipping form.<br />';
 			}
 			else {
-				$output .= '<strong>Form ' . $form_id . '</strong><br />';
-
-				foreach($required_fields as $required_field => $required_field_present) {
-					if(!$required_field_present) {
-						$output .= '<em>' . $required_field . '</em> is required, and is not set. Add <strong>solve360 ' . $required_field . '</strong> to the appropriate field.<br />';
-					}
+				$output .= '<strong>' . $form->title . '</strong><br />Found fields: ';
+				foreach ($found_fields as $found_field) {
+					$output .= $found_field . ', ';
 				}
-				$errors = true;
+				$output = substr($output, 0, -2);
+				$output .= '.<br />';
+
 			}
 
+		}
+		else { // some required fields are missing
+			$output .= '<strong>' . $form->title . '</strong><br />';
 
-		} // if($form_meta)
+				foreach($required_fields as $required_field => $required_field_present) {
+				if(!$required_field_present) {
+					$output .= '<div class="error"><p><em>' . $required_field . '</em> is required, and is not set. Add <strong>solve360 ' . $required_field . '</strong> to the appropriate field.</p></div>';
+				}
+			}
+			$errors = true;
+		}		
+
+	} // foreach($forms as $form)
+
+	// create contacts array
+
+	if ($errors) {
+		$output .= '<br /><div class="updated"><p>Forms <strong>not</strong> exported to Solve360. Please fix the errors highlighted above.</p></h3>';
 	}
-
-	if(!$errors) {
+	else {
 
 		// Get leads
 
@@ -222,56 +228,55 @@ if(!$errors) {
 			if($leads)
 			{
 
-		// if($debug) $output .= '<h4>$leads for form ' . $id . '</h4>' . print_r($leads, true);
-
 				foreach($leads as $lead)
 				{
 
 					if($lead['date_created'] > $start_date) {
 
-						$contactstosend[$solve_lead] = array(
-							'firstname' => $lead[$forms_and_fields[$id]['firstname']],
-							'lastname' => $lead[$forms_and_fields[$id]['lastname']],
-							'businessemail' => $lead[$forms_and_fields[$id]['businessemail']],
-							'cellularphone' => $lead[$forms_and_fields[$id]['cellularphone']],
-							'categoriestoadd' => $forms_and_fields[$id]['categoriestoadd'],
-						);
+						foreach($forms_and_fields[$id] as $field_name => $field_id) {
 
-						$solve_note = '';
+							if($field_name == 'note') {
 
-						$has_note = false;
-						if(count($details['note'])>0) {
-							$has_note = true;
-						}
+								$solve_note = '';
+								if(count($details['note'])>0) {
 
-						if($has_note) {
-
-							foreach($details['note'] as $note)
-							{
-								$solve_note .= $note['text'] . "\n";
-								if($note['id'])
-								{
-									if(RGFormsModel::get_field_value_long($lead['id'], $note['id'])) {
-										$solve_note .= RGFormsModel::get_field_value_long($lead['id'], $note['id']) . "\n";
-									}
-									else
+									foreach($details['note'] as $note)
 									{
-										$solve_note .= $lead[$note['id']] . "\n";
+										$solve_note .= $note['text'] . "\n";
+										if($note['id'])
+										{
+											if(RGFormsModel::get_field_value_long($lead['id'], $note['id'], $id)) {
+												$solve_note .= RGFormsModel::get_field_value_long($lead['id'], $note['id']) . "\n";
+											}
+											else
+											{
+												$solve_note .= $lead[$note['id']] . "\n";
+											}
+										}
+										$solve_note .= "\n";
 									}
+									$contactstosend[$solve_lead]['note'] = $solve_note;
+
 								}
-								$solve_note .= "\n";
+							} // if($field_name == 'note')
+							elseif ($field_name == 'categoriestoadd') {
+								$contactstosend[$solve_lead]['categoriestoadd'] = $forms_and_fields[$id]['categoriestoadd'];
 							}
-							$contactstosend[$solve_lead]['note'] = $solve_note;
+							elseif ($field_name == 'ownership') {
+								$contactstosend[$solve_lead]['ownership'] = $forms_and_fields[$id]['ownership'];
+							}
+							else {
+								$contactstosend[$solve_lead][$field_name] = $lead[$forms_and_fields[$id][$field_name]];
+							}
 
-						}
 
-						$contactstosend[$solve_lead]['ownership'] = $forms_and_fields[$id]['ownership'];
+						} // foreach($forms_and_fields[$id] as $field_name => $field_id)
 
-					$solve_lead++;
+						$solve_lead++;
 
-					}
+					} // if($lead['date_created'] > $start_date) 
 
-				}
+				} // foreach($leads as $lead)
 			}
 		} // foreach($forms_and_fields as $id => $details)
 
@@ -366,7 +371,13 @@ if(!$errors) {
 				// add "Add a view for linked emails" activity
 				$aavfle = $solve360Service->addActivity($contactId, 'linkedemails', '');
 
-				// emails
+				// Notification emails
+
+				$to = get_option('gravity_to_solve360_to');
+				$from = get_option('gravity_to_solve360_from');
+				$cc .= get_option('gravity_to_solve360_cc');
+				$bcc .= get_option('gravity_to_solve360_bcc');
+
 				$headers = 'From: ' . $from . "\r\n";
 				if($cc) $headers .= 'Cc: ' . $cc . "\r\n";
 				if($bcc) $headers .= 'Bcc: ' . $bcc . "\r\n";

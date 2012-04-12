@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
-Tags: gravity, solve360
-Stable tag: 0.7
+Tags: gravity, gravityforms, solve360
+Stable tag: 0.8
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -22,31 +22,49 @@ Also available on GitHub: <a href="https://github.com/SteveBarnett/Gravity-to-So
 
 == Labelling Gravity Forms for export ==
 
+
+= General =
+
+To mark fields in your Gravity Form that are to be sent to Solve360, add an Admin Label in this pattern: "solve360 Field Name".
+The field data will be added as the contents of the Field.
+You can find _Field Names_ in Solve360 by going to _My Account_, _API Reference tab_, and selecting _Fields_ from the drop down.
+
+Example
+
+	Field Name in Solve360 "businessemail"
+	Admin Label "solve360 businessemail"
+	Data "Steve Barnett"
+	will show
+	"Steve Barnett" in the businessemail Field of the Solve360 contact.
+
+
 = Solve360 required fields =
 
-Fields with data to be passed to Solve360 must be Admin Labelled: "solve360 fieldname".
-The required fields are:
-	firstname;
-	lastname;
-	businessemail;
-	cellularphone;
-	category;
-	ownership.
+The following fields are required:
+* businessemail;
+* category;
+* ownership.
+
+
+= Special Fields: Solve360 Categories =
+
+These must be added as hidden fields.
+The Field Label should be "solve360 category CategoryName". CategoryName is for your reference only.
+The Default Value must contain the Tag ID, e.g. "12345678".
+You can find _Tag IDs_ in Solve360 by going to _My Account_, _API Reference tab_, and selecting _Category Tags_from the drop down.
+
+
+
+= Special Fields: Gravity Names =
+
 When Gravity's combined fields for Name are used, the Admin Label should be "solve360 fullname".
 
 
-= Solve360 Categories =
-
-These must be added as hidden fields.
-The Field Label should be "solve360 category CategoryName". CategoryName is for reference only.
-The Default Value must contain the tag id, e.g. "12345678".
-
-
-= Solve360 Notes =
+= Special Fields: Solve360 Notes =
 
 The Admin Label should be of the form: "solve360 note NoteName".
 For hidden fields, the Solve360 note will be the Admin Label text.
-For regular inputs, the Solve360 note will be the Admin Label text followed bt the field data.
+For regular inputs, the Solve360 note will be the Admin Label text followed by the field data.
 
 
 Input field example
@@ -64,7 +82,17 @@ Hidden field example
 	will show
 	"NoteTextGoesHere"
 
+
+
+
+
 == Changelog ==
+
+
+= 0.8 =
+
+* Allowed for adding of any Field by Field Name
+* Better error messages
 
 = 0.7 =
 
@@ -88,4 +116,4 @@ Hidden field example
 * Added check for is_plugin_active for later use in cronjob
 
 = 0.4 =
-* Intial release
+* Initial release

@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.7
+ * @version 0.8
  */
 /*
 Plugin Name: Gravity to Solve360
 Description: Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
-Version: 0.62
+Version: 0.8
 Author: Steve Barnett
 Author URI: http://naga.co.za
 License: GPLv2 or later
@@ -105,27 +105,6 @@ if($_POST && wp_verify_nonce($_POST['gravity_to_solve360_nonce'],'gravity_to_sol
 			&nbsp; <label for="gravity_to_solve360_debug_mode_disabled">Off</label> &nbsp; &nbsp;
 		</td>
 	</tr>
-	
-	<?php
-//	if(is_
-//	$gravity_to_solve360_debug_start_date = get_option('gravity_to_solve360_debug_start_date') 
-//'2012-02-12 10:30:00';
-
-//	echo date('Y-m-d H:i:s');
-//	if(is_numeric(strtotime(date('Y-m-d H:i:s')))) {
-//		echo 'Y';
-//	}
-//	else {
-//		echo 'N';
-//	}
-	
-//	$gravity_to_solve360_debug_start_date = get_option('gravity_to_solve360_debug_start_date');
-//	if(!is_numeric(strtotime($gravity_to_solve360_debug_start_date)))
-//	{
-//		$gravity_to_solve360_debug_start_date = date('Y-m-d H:i:s');
-//	}
-	
-	?>
 	<tr>
 
 		<td>
