@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, gravityforms, solve360
-Stable tag: 0.8
+Stable tag: 0.81
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -43,6 +43,7 @@ Example
 = Solve360 required fields =
 
 The following fields are required:
+
 * businessemail;
 * category;
 * ownership.
@@ -93,6 +94,10 @@ Hidden field example
 = 0.9 =
 
 * Added FAQ section
+
+= 0.81 =
+
+* Tiny bug fixes - name, found fields.
 
 = 0.8 =
 
