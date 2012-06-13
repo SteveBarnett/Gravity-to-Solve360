@@ -122,7 +122,7 @@ if(!$errors) {
 				elseif(stripos($fields['adminLabel'], 'lastname') !== false)
 				{
 					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
-					$found_fields[] = 'lastname, ';
+					$found_fields[] = 'lastname';
 				}
 				elseif(stripos($fields['adminLabel'], 'businessemail') !== false)
 				{
@@ -186,8 +186,8 @@ if(!$errors) {
 			}
 			else {
 				$output .= '<strong>' . $form->title . '</strong><br />Found fields: ';
-				foreach ($found_fields as $found_field) {
-					$output .= $found_field . ', ';
+				foreach ($found_fields as $a_found_field) {
+					$output .= $a_found_field . ', ';
 				}
 				$output = substr($output, 0, -2);
 				$output .= '.<br />';
