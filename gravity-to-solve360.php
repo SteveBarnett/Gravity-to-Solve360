@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.9
+ * @version 0.95
  */
 /*
 Plugin Name: Gravity to Solve360
 Description: Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
-Version: 0.9
+Version: 0.95
 Author: Steve Barnett
 Author URI: http://naga.co.za
 License: GPLv2 or later

@@ -105,14 +105,12 @@ if(!$errors) {
 					$found_fields[] = 'firstname';
 					$found_fields[] = 'lastname';
 				}
-				elseif(stripos($fields['adminLabel'], 'note') !== false)
+				elseif(stripos($fields['adminLabel'], 'name') !== false)
 				{
-					$notetext = str_ireplace('note ','',$adminLabel);
-					$forms_and_fields[$form->id]['note'][$notenumber]['id'] = $fields['id'];
-					$forms_and_fields[$form->id]['note'][$notenumber]['text'] = $notetext;
-					$notenumber++;
-					$found_fields[] = 'note';
-					}
+					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
+					$found_fields[] = 'name';
+
+				}
 				elseif(stripos($fields['adminLabel'], 'firstname') !== false)
 				{
 					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
@@ -122,8 +120,16 @@ if(!$errors) {
 				elseif(stripos($fields['adminLabel'], 'lastname') !== false)
 				{
 					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
-					$found_fields[] = 'lastname, ';
+					$found_fields[] = 'lastname';
 				}
+				elseif(stripos($fields['adminLabel'], 'note') !== false)
+				{
+					$notetext = str_ireplace('note ','',$adminLabel);
+					$forms_and_fields[$form->id]['note'][$notenumber]['id'] = $fields['id'];
+					$forms_and_fields[$form->id]['note'][$notenumber]['text'] = $notetext;
+					$notenumber++;
+					$found_fields[] = 'note';
+					}
 				elseif(stripos($fields['adminLabel'], 'businessemail') !== false)
 				{
 					$forms_and_fields[$form->id][$adminLabel] = $fields['id'];
@@ -186,8 +192,8 @@ if(!$errors) {
 			}
 			else {
 				$output .= '<strong>' . $form->title . '</strong><br />Found fields: ';
-				foreach ($found_fields as $found_field) {
-					$output .= $found_field . ', ';
+				foreach ($found_fields as $found_field_name) {
+					$output .= $found_field_name . ', ';
 				}
 				$output = substr($output, 0, -2);
 				$output .= '.<br />';
@@ -207,6 +213,8 @@ if(!$errors) {
 		}		
 
 	} // foreach($forms as $form)
+
+	if($debug) $output .= print_r($forms_and_fields, true);
 
 	// create contacts array
 
@@ -259,6 +267,15 @@ if(!$errors) {
 
 								}
 							} // if($field_name == 'note')
+							elseif ($field_name == 'name') {
+
+								// split name by first space
+								$split_name = explode(' ', $lead[$forms_and_fields[$id]['name']], 2);
+
+								$contactstosend[$solve_lead]['firstname'] = $split_name[0];
+								$contactstosend[$solve_lead]['lastname'] = $split_name[1];
+
+							}
 							elseif ($field_name == 'categoriestoadd') {
 								$contactstosend[$solve_lead]['categoriestoadd'] = $forms_and_fields[$id]['categoriestoadd'];
 							}
