@@ -63,11 +63,12 @@ if(!$errors) {
 		$start_date = get_option('gravity_to_solve360_last_export_date');
 	}
 
-	$end_date = $debug_end_date ? $debug_end_date : date('Y-m-d H:i:s');
+	// $end_date = $debug_end_date ? $debug_end_date : date('Y-m-d H:i:s');
+	$end_date = $debug_end_date ? $debug_end_date : current_time('mysql');
 
+	// Gravity stores UTC time in database, but displays local time
 	$output .= '
 	<p>Exporting all Gravity Forms entries between <strong>' . $start_date . '</strong> and <strong>' . $end_date . '</strong>.</p>';
-
 
 	// Make array of form ids and Solve fields
 
@@ -79,7 +80,7 @@ if(!$errors) {
     foreach($forms as $form) {
 
 		$required_fields = array(
-			'businessemail' => false, // required for matching contacs
+			'businessemail' => false, // required for matching contacts
 			'category' => false, // required by API
 			'ownership' => false // required by API
 		);
@@ -231,7 +232,13 @@ if(!$errors) {
 
 		foreach($forms_and_fields as $id => $details)
 		{
-			$leads = RGFormsModel::get_leads($id, 0, "DESC", "", 0, 1000, null, null, false, $start_date, $end_date);
+			// Gravity Forms uses UCT dates for database, but local time for display
+
+				$gravity_to_solve360_offset .= time()-current_time('timestamp');
+				$gravity_to_solve360_adjusted_start_date = date('Y-m-d H:i:s', strtotime($start_date) + $gravity_to_solve360_offset);
+				$gravity_to_solve360_adjusted_end_date = date('Y-m-d H:i:s', strtotime($end_date) + $gravity_to_solve360_offset);
+
+			$leads = RGFormsModel::get_leads($id, 0, "DESC", "", 0, 1000, null, null, false, $gravity_to_solve360_adjusted_start_date, $gravity_to_solve360_adjusted_end_date);
 
 			if($leads)
 			{
@@ -239,7 +246,7 @@ if(!$errors) {
 				foreach($leads as $lead)
 				{
 
-					if($lead['date_created'] > $start_date) {
+					if($lead['date_created'] >= $gravity_to_solve360_adjusted_start_date) {
 
 						foreach($forms_and_fields[$id] as $field_name => $field_id) {
 
@@ -291,7 +298,7 @@ if(!$errors) {
 
 						$solve_lead++;
 
-					} // if($lead['date_created'] > $start_date) 
+					} // if($lead['date_created'] > $gravity_to_solve360_adjusted_start_date) 
 
 				} // foreach($leads as $lead)
 			}
@@ -316,7 +323,8 @@ if(!$errors) {
 		<table>
 			<thead>
 				<th scope="col">Last name</th>
-				<th scope="col">First name</th>';
+				<th scope="col">First name</th>
+				<th scope="col">Email address</th>';
 
 		if(!$debug) {
 		$output .= '
@@ -333,6 +341,7 @@ if(!$errors) {
 			$output .= '<tr>';
 			$output .= '<td>' . $contactData['lastname'] . '</td>';
 			$output .= '<td>' . $contactData['firstname'] . '</td>';
+			$output .= '<td>' . $contactData['businessemail'] . '</td>';
 
 			if(!$debug) {
 
