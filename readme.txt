@@ -18,7 +18,7 @@ Also available on GitHub: <a href="https://github.com/SteveBarnett/Gravity-to-So
 1. Go to Plugins > Add New, Upload and choose gravity-to-solve360.zip.
 2. Activate the plugin.
 3. Add extra data to your existing Gravity Forms as set out in the FAQ section.
-4. Go to Tools > Export to Solve360 to send data from Gravity Forms to Solve360.
+4. Data is sent from Gravity Forms to Solve360 when someone visits your WordPress site.
 
 
 == Frequently Asked Questions ==
