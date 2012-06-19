@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.95
+ * @version 0.96
  */
 /*
 Plugin Name: Gravity to Solve360
 Description: Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
-Version: 0.95
+Version: 0.96
 Author: Steve Barnett
 Author URI: http://naga.co.za
 License: GPLv2 or later
@@ -65,7 +65,7 @@ function gts360() {
 add_action("gform_after_submission", "gravity_to_solve360_after_submission", 10, 2);
 
 function gravity_to_solve360_after_submission() {
-	wp_schedule_single_event(current_time('timestamp'), 'gravity_to_solve360_cron');
+	wp_schedule_single_event(time(), 'gravity_to_solve360_cron');
 }
 
 add_action('gravity_to_solve360_cron','gravity_to_solve360_send');

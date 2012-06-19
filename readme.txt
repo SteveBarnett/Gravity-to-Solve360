@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, gravityforms, solve360
-Stable tag: 0.95
+Stable tag: 0.96
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -91,10 +91,13 @@ Hidden field example
 
 == Changelog ==
 
+= 0.96 =
+
+* Added sending to Solve360 using WP-Cron
+
 = 0.95 =
 
 * Added better name support
-* Added automatic sending to Solve360 using WP-Cron
 
 = 0.9 =
 
