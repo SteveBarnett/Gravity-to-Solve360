@@ -60,128 +60,21 @@ function gts360() {
 	require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
 }
 
-// Cron - add 1, 5, 15 minutes to schedules
-
-global $gravity_to_solve360_cron_frequencies;
-
-$gravity_to_solve360_cron_frequencies = array(
-	'manual' => 'Do not send automatically',
-	'everyminute' => 'Every minute (not recommended)',
-	'every5minutes' => 'Every 5 minutes',
-	'every15minutes' => 'Every 15 minutes',
-	'hourly' => 'Every hour',
-	'twicedaily' => 'Twice a day',
-	'daily' => 'Once a day'
-	);
-
-add_filter( 'cron_schedules', 'gts360_extend_schedules' );
-
-function gts360_extend_schedules( $schedules ) {
-	$schedules['everyminute'] = array(
-		'interval' => 60,
-		'display' => __( 'Once a minute' )
-	);
-	 $schedules['every5minutes'] = array(
-		'interval' => 60 * 5,
-		'display' => __( 'Once every 5 minutes' )
-	);
-	 $schedules['every15minutes'] = array(
-		'interval' => 60 * 15,
-		'display' => __( 'Once every 15 minutes' )
-	);
-	return $schedules;
-}
-
-// Cron - adding and removing
-
-// $gravity_to_solve360_cron_frequency = get_option('gravity_to_solve360_cron_frequency');
-
-// // clear all schedule hooks except the current one
-// $gravity_to_solve360_cron_frequencies_unused = $gravity_to_solve360_cron_frequencies;
-// unset($gravity_to_solve360_cron_frequencies_unused[$gravity_to_solve360_cron_frequency]);
-
-// foreach($gravity_to_solve360_cron_frequencies_unused as $frequency_name => $frequency_display) {
-// 	wp_clear_scheduled_hook('gravity_to_solve360_cron_' . $frequency_name);
-// }
-
-// if($gravity_to_solve360_cron_frequency != 'manual') {
-	
-// 	add_action( 'gravity_to_solve360_cron_' . $gravity_to_solve360_cron_frequency, 'gravity_to_solve360_cron' );
-
-// 	if ( !wp_next_scheduled('gravity_to_solve360_cron_' . $gravity_to_solve360_cron_frequency)) {
-// 		// wp_schedule_event(time(), $gravity_to_solve360_cron_frequency, 'gravity_to_solve360_cron_' . $gravity_to_solve360_cron_frequency );
-// 		wp_schedule_event(current_time('timestamp')+30, $gravity_to_solve360_cron_frequency, 'gravity_to_solve360_cron_' . $gravity_to_solve360_cron_frequency );
-// 	}
-	
-// }
-
-// function gravity_to_solve360_cron() {
-// 	require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
-// 	mail('steve@naga.co.za', 'test ' . date('Y-m-d H:i:s'), $output, "Content-type: text/html\r\n");
-// }
-
-
-// wp_clear_scheduled_hook('gravity_to_solve360_cron_everyminute');
-// wp_clear_scheduled_hook('gravity_to_solve360_cron');
-// wp_clear_scheduled_hook('gravity_to_solve360_cron_ts');
-
-
-// if ( ! wp_next_scheduled('my_task_hook') ) {
-// 	wp_schedule_event( time(), 'hourly', 'my_task_hook' ); // hourly, daily and twicedaily
-// }
-// add_action( 'my_task_hook', 'my_task_function' );
-// function my_task_function() {
-// 	wp_mail( 
-// 		'steve@naga.co.za', 
-// 		'Automatic mail', 
-// 		'Hello, this is an automatically scheduled email from WordPress.'
-// 	);
-// }
-
-// if ( ! wp_next_scheduled('my_task_hook2') ) {
-// 	wp_schedule_event( time(), 'everyminute', 'my_task_hook2' ); // hourly, daily and twicedaily
-// }
-// add_action( 'my_task_hook2', 'my_task_function' );
-// function my_task_function() {
-// 	wp_mail( 
-// 		'steve@naga.co.za', 
-// 		'Automatic mail', 
-// 		'Hello, this is an automatically scheduled email from WordPress.'
-// 	);
-// }
-
+// Cron - run after any form submission
 
 add_action("gform_after_submission", "gravity_to_solve360_after_submission", 10, 2);
 
 function gravity_to_solve360_after_submission() {
-	// wp_schedule_single_event(time(), 'gravity_to_solve360_cron');
 	wp_schedule_single_event(current_time('timestamp'), 'gravity_to_solve360_cron');
-	// wp_schedule_single_event(current_time('timestamp'), 'gravity_to_solve360_cron_ts');
 }
 
 add_action('gravity_to_solve360_cron','gravity_to_solve360_send');
-// add_action('gravity_to_solve360_cron_ts','gravity_to_solve360_send_ts');
 
 function gravity_to_solve360_send() {
 	require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
-	mail('steve@naga.co.za', 'test ' . date('Y-m-d H:i:s'), $output, "Content-type: text/html\r\n");
 }
 
-// function gravity_to_solve360_send_ts() {
-// 	require(ABSPATH . 'wp-content/plugins/gravity-to-solve360/gravity-to-solve360.inc.php');
-// 	mail('steve@naga.co.za', 'test ts ' . date('Y-m-d H:i:s'), $output, "Content-type: text/html\r\n");
-// }
-
-
-
-
-
 function gts360_options() {
-
-print_r(_get_cron_array());
-// echo '<br /> 1340047883 ' . date('Y-m-d H:i:s', 1340047883) . '<br />';
-// print_r(wp_get_schedules()); // has new slots
-
 
 global $accepted_fields;
 
