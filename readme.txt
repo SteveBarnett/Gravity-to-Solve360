@@ -1,7 +1,7 @@
 === Gravity to Solve360 ===
 Contributors: steve.barnett
 Tags: gravity, gravityforms, solve360
-Stable tag: 0.96
+Stable tag: 0.97
 Requires at least: 3.1.3
 Tested up to: 3.3.1
 License: GPLv2 or later
@@ -90,6 +90,10 @@ Hidden field example
 
 
 == Changelog ==
+
+= 0.97 =
+
+* Bug fix - removed unused items from Setting page
 
 = 0.96 =
 

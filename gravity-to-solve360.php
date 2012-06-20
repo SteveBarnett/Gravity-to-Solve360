@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Gravity_to_Solve360
- * @version 0.96
+ * @version 0.97
  */
 /*
 Plugin Name: Gravity to Solve360
 Description: Exports data from completed <a href="http://www.gravityforms.com/">Gravity Forms</a> to a specified <a href="http://norada.com/">Solve360</a> account.
-Version: 0.96
+Version: 0.97
 Author: Steve Barnett
 Author URI: http://naga.co.za
 License: GPLv2 or later
@@ -203,39 +203,8 @@ if($_POST && wp_verify_nonce($_POST['gravity_to_solve360_nonce'],'gravity_to_sol
 		</td>
 	</tr>
 
-	<tr>
-		<td>
-			<h3>Automatic sending to Solve360</h3>
-		</td>
-		<td>
-		</td>
-	</tr>
-
-	<tr>
-		<td>
-			<label for="gravity_to_solve360_cron_frequency">Frequency</label>
-		</td>
-		<td>
-			<select name="gravity_to_solve360_cron_frequency" id="gravity_to_solve360_cron_frequency">
-				<?php
-
-				global $gravity_to_solve360_cron_frequencies;
-
-				foreach ($gravity_to_solve360_cron_frequencies as $frequency_name => $frequency_display)
-				{
-					echo '<option value="' . $frequency_name . '"';
-					if($frequency_name == get_option('gravity_to_solve360_cron_frequency')) echo ' selected="selected" ';
-					echo '>' . $frequency_display . '</option>';
-				}
-				?>
-			</select>		
-		</td>
-	</tr>
-
 </table>
 
-
-<br/><br/>
 <p class="submit" style="text-align: left;">
 	<input type="submit" name="submit" value="Save Settings" class="button-primary"/>
 </p>
